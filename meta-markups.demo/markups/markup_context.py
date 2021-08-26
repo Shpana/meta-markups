@@ -38,9 +38,9 @@ class RuntimeMarkupContext(IMarkupContext):
     def select_links(self, 
             target: TTarget, 
             option_type: Type[TMarkupOption]) -> Iterable[TMarkupOption]:
-        
+
         return filter(
-            lambda link: link.target is target and type(link.option) is option_type, self.__links
+            lambda link: link.target == target and type(link.option) is option_type, self.__links
         )
 
 
@@ -56,11 +56,11 @@ context = MarkupContextFactory().generate_context()
 
 
 def apply_option(target: TTarget, option: TMarkupOption) -> Callable:
-    context.add_link(target, option)
+    context.add_link(hash(target), option)
     return target
 
 
 def load_options(target: TTarget, option_type: Type[TMarkupOption]) -> tuple[TMarkupOption]:
     return tuple(
-        map(lambda link: link.option, context.select_links(target, option_type))
+        map(lambda link: link.option, context.select_links(hash(target), option_type))
     )
