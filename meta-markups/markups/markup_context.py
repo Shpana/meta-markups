@@ -1,28 +1,40 @@
 from abc import abstractmethod
-from typing import Iterable, NoReturn, Protocol, Type, TypeVar
+from typing import Type, TypeVar
 
 
 TTarget = TypeVar("TTarget")
-TMarkupOption = TypeVar("TMarkupOption")
+TMarkupAttribute = TypeVar("TMarkupAttribute")
 
 
-class IMarkupContext(Protocol):
-
-    @abstractmethod
-    def add_option(self, 
-            target: TTarget, option: TMarkupOption) -> NoReturn: 
-        """ Добавляет опцию разметки """
+class IMarkupContext:
 
     @abstractmethod
-    def has_option(self, 
-            target: TTarget, option_type: Type[TMarkupOption]) -> bool: 
-        """ Проверяет имеет ли объект переданную опцию """
+    def attach_attribute(self, 
+            target: TTarget, attr: TMarkupAttribute) -> None: ...
 
     @abstractmethod
-    def select_all_options(self, target: TTarget) -> Iterable[TMarkupOption]:
-        """ Возвращает все имеющиеся опции разметки """
+    def has_target(self, target: TTarget) -> bool: ...
 
     @abstractmethod
-    def select_options(self, 
-            target: TTarget, options_type: Type[TMarkupOption]) -> Iterable[TMarkupOption]: 
-        """ Возвращает все опции, привязянные к объекту, с переданным типом """
+    def has_attribute_with_type(self, 
+            target: TTarget, attr_type: Type[TMarkupAttribute]) -> bool: ...
+
+    @abstractmethod
+    def get_attributes(self, target: TTarget) -> tuple[TMarkupAttribute]: ...
+
+    @abstractmethod
+    def get_attributes_with_type(self,
+            target: TTarget, attr_type: Type[TMarkupAttribute]) -> tuple[TMarkupAttribute]: ...
+
+    def try_get_attributes(self, target: TTarget) -> tuple[TMarkupAttribute]:
+        if not self.has_target(target):
+            return tuple()
+        else:
+            return self.get_attributes(target)
+    
+    def try_get_attributes_with_type(self, 
+            target: TTarget, attr_type: Type[TMarkupAttribute]) -> tuple[TMarkupAttribute]:
+        if not self.has_target(target):
+            return tuple()
+        else:
+            return self.get_attributes_with_type(target, attr_type)

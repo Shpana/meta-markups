@@ -1,19 +1,17 @@
 from .markup_context import \
-    IMarkupContext, TTarget, TMarkupOption
+    IMarkupContext, TTarget, TMarkupAttribute
 
-from .utils.markup_wrapper import markup_wrapper
+from .utils.wrap_attachment import wrap_attachment 
 
 from .runtime_markup_context import RuntimeMarkupContext
-from .better_runtime_markup_context import BetterRuntimeMarkupContext
 
 
 __all__ = [
-    markup_wrapper,
+    wrap_attachment,
 
     IMarkupContext,
     TTarget,
-    TMarkupOption,
+    TMarkupAttribute,
 
     RuntimeMarkupContext,
-    BetterRuntimeMarkupContext,
 ]

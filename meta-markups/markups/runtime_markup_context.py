@@ -1,41 +1,38 @@
-from typing import NoReturn, Iterable, Type
+from typing import Type
 
-from .markup_context import IMarkupContext, TTarget, TMarkupOption
+from .markup_context import IMarkupContext, TTarget, TMarkupAttribute
 
 
 class RuntimeMarkupContext(IMarkupContext): 
 
-    def __init__(self) -> NoReturn:
-        self.__meta_markups = dict()
+    def __init__(self) -> None:
+        self.__markup = dict()
 
-    def add_option(self, 
-            target: TTarget, option: TMarkupOption) -> NoReturn: 
-        if not self.__target_exists(target):
-            self.__meta_markups[target] = list()
+    def attach_attribute(self, 
+            target: TTarget, attr: TMarkupAttribute) -> None: 
+        if not self.has_target(target):
+            self.__markup[target] = list()
+        self.__markup[target].append(attr)
 
-        self.__meta_markups[target].append(option)
+    def has_target(self, target: TTarget) -> bool:
+        return target in self.__markup
 
-    def has_option(self, 
-            target: TTarget, option_type: Type[TMarkupOption]) -> bool:
+    def has_attribute_with_type(self, 
+            target: TTarget, attr_type: Type[TMarkupAttribute]) -> bool:
         return (
-            self.__target_exists(target) 
+            self.has_target(target)
             and
-            any(map(lambda option: type(option) is option_type, self.__meta_markups[target])))
+            any(map(lambda attr: type(attr) is attr_type, self.__markup[target])))
 
-    def select_all_options(self, target: TTarget) -> Iterable[TMarkupOption]:
+    def get_attributes(self, target: TTarget) -> tuple[TMarkupAttribute]:
+        self.__guard_accessing(target)
+        return (attr for attr in self.__markup[target])
+
+    def get_attributes_with_type(self, 
+            target: TTarget, attr_type: Type[TMarkupAttribute]) -> tuple[TMarkupAttribute]: 
         self.__guard_selection(target)
+        return filter(lambda attr: type(attr) is attr_type, self.__markup[target])
 
-        return (option for option in self.__meta_markups[target])
-
-    def select_options(self, 
-            target: TTarget, options_type: Type[TMarkupOption]) -> Iterable[TMarkupOption]: 
-        self.__guard_selection(target)
-
-        return filter(lambda option: type(option) is options_type, self.__meta_markups[target])
-
-    def __target_exists(self, target: TTarget) -> bool:
-        return target in self.__meta_markups
-
-    def __guard_selection(self, target: TTarget) -> NoReturn: 
-        if not self.__target_exists(target):
-            raise ValueError(f"Target {target} not exists. You cannot select options from it.")
+    def __guard_accessing(self, target: TTarget) -> None: 
+        if not self.has_target(target):
+            raise ValueError(f"Target ({target}) not exists in current context. You cannot access its attributes.")
