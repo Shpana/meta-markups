@@ -27,12 +27,11 @@ def with_color(color: str) -> Callable:
 
 
 def apply_color(target: TRealTarget, handle: str) -> str:
-    color_spec = context.try_get_attributes_with_type(target, ColorAttribute)
-
-    if len(color_spec) > 0:
-        return color_spec[0].color + handle + '\033[0m'
-    else:
+    if not context.has_attribute_with_type(target, ColorAttribute):
         return handle
+    else:
+        color_spec = context.try_get_attributes_with_type(target, ColorAttribute)
+        return color_spec[0].color + handle + '\033[0m'
 
 
 class ShowInConsoleAttribute:
@@ -45,8 +44,7 @@ def show_in_console(target: TRealTarget) -> Callable:
 
 
 def should_show_in_console(target: TRealTarget) -> bool:
-    return len(
-        context.try_get_attributes_with_type(target, ShowInConsoleAttribute)) > 0
+    return context.has_attribute_with_type(target, ShowInConsoleAttribute) 
 
 
 class Player:
