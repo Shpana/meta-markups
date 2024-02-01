@@ -3,7 +3,7 @@ from typing import Type, TypeVar, Hashable
 from .markup_context import IMarkupContext, TTarget, TMarkupAttribute
 
 
-TRealTarget = TypeVar("TRealTarget", type(TTarget), Hashable)
+TRealTarget = TypeVar("TRealTarget", bound=TTarget.__bound__ | Hashable)
 
 
 class RuntimeMarkupContext(IMarkupContext): 
