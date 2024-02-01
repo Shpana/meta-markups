@@ -1,28 +1,30 @@
-from typing import Callable, NoReturn, TypeVar
+from typing import Callable, TypeVar
 
-from markups import markup_wrapper, BetterRuntimeMarkupContext, TTarget
+from ..markups import (
+        wrap_attachment, RuntimeMarkupContext, TTarget
+    )
 
 
-markup_context = BetterRuntimeMarkupContext()
+context = RuntimeMarkupContext()
 
 
-class ShowInInspectorMarkupOption:
+class ShowInConsoleAttribute:
     pass
 
 
-def show_in_inspector(target: TTarget) -> Callable:
-    return markup_wrapper(
-        markup_context, target, ShowInInspectorMarkupOption())
+def show_in_console(target: TTarget) -> Callable:
+    return wrap_attachment(
+        context, target, ShowInConsoleAttribute())
 
 
-def should_show_in_inspector(target: TTarget) -> bool:
+def should_show_in_console(target: TTarget) -> bool:
     return len(list(
-        markup_context.select_options(target, ShowInInspectorMarkupOption))) > 0
+        context.try_get_attributes_with_type(target, ShowInConsoleAttribute))) > 0
 
 
 class Player:
     
-    @show_in_inspector
+    @show_in_console
     @property
     def health(self) -> float: ...
 
@@ -32,13 +34,13 @@ class Player:
 
 TComponent = TypeVar("TComponent")
 
-def show_component_in_console(component: TComponent) -> NoReturn: 
+def show_fields_in_console(component: TComponent) -> None: 
     for key, value in type(component).__dict__.items():
-        if should_show_in_inspector(value):
+        if should_show_in_console(value):
             print(key)
 
 
 if __name__ == "__main__":
     player = Player()
 
-    show_component_in_console(player)
+    show_fields_in_console(player)

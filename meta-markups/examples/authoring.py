@@ -1,12 +1,12 @@
+from typing import Callable
 from dataclasses import dataclass
-from typing import Callable, Iterable
 
-from markups import (
-        markup_wrapper, RuntimeMarkupContext, TTarget
+from ..markups import (
+        wrap_attachment, RuntimeMarkupContext, TTarget
     )
 
 
-author_markup_context = RuntimeMarkupContext()
+context = RuntimeMarkupContext()
 
 
 @dataclass
@@ -15,12 +15,12 @@ class AuthorMarkupOption:
 
 
 def author(name: str) -> Callable:
-    return lambda target: markup_wrapper(
-        author_markup_context, target, AuthorMarkupOption(name))
+    return lambda target: wrap_attachment(
+        context, target, AuthorMarkupOption(name))
 
 
-def select_authors(target: TTarget) -> Iterable[AuthorMarkupOption]:
-    return author_markup_context.select_options(target, AuthorMarkupOption)
+def select_authors(target: TTarget) -> tuple[AuthorMarkupOption]:
+    return context.try_get_attributes_with_type(target, AuthorMarkupOption)
 
 
 @author("Shpana")
@@ -31,4 +31,3 @@ class BookAboutDecorators: ...
 if __name__ == "__main__":
     for author_option in select_authors(BookAboutDecorators):
         print(author_option)
-

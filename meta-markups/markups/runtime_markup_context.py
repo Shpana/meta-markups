@@ -30,7 +30,7 @@ class RuntimeMarkupContext(IMarkupContext):
 
     def get_attributes_with_type(self, 
             target: TTarget, attr_type: Type[TMarkupAttribute]) -> tuple[TMarkupAttribute]: 
-        self.__guard_selection(target)
+        self.__guard_accessing(target)
         return filter(lambda attr: type(attr) is attr_type, self.__markup[target])
 
     def __guard_accessing(self, target: TTarget) -> None: 
