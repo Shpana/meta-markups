@@ -3,7 +3,7 @@ from .markup_context import \
 
 from .utils.wrap_attachment import wrap_attachment 
 
-from .runtime_markup_context import RuntimeMarkupContext
+from .runtime_markup_context import RuntimeMarkupContext, TRealTarget
 
 
 __all__ = [
@@ -14,4 +14,5 @@ __all__ = [
     TMarkupAttribute,
 
     RuntimeMarkupContext,
+    TRealTarget,
 ]
